@@ -1,70 +1,107 @@
-# Getting Started with Create React App
+# Family Task Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
+This is a mobile-first web application that allows family members to create, view, and manage tasks together. It is built using React, Supabase, and Tailwind CSS. The app connects to a Supabase backend for managing user accounts, tasks, and family data.
 
-## Available Scripts
+## Features:
+- Create, update, and delete tasks.
+- Tasks can be assigned priorities and display creation dates.
+- Tasks can be marked as pending, in progress, or completed.
+- Users can view suggested tasks and add them to their to-do list.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Setup Instructions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 1. Clone the Repository
+Input the following into bash:
+```
+git clone <your-repo-url>
+cd family-task-manage
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 2. Install Dependencies
+Make sure you have Node.js installed. Then, run the following command:
+npm install
 
-### `npm test`
+### 3. Set up Supabase
+To connect your application to Supabase, you will need to:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Create an account at Supabase and start a new project.
+- Get your Supabase credentials (API URL and Key) from the project settings.
+- Set up the required database tables by executing the following SQL commands in Supabase.
 
-### `npm run build`
+Here is the code to get started: 
+```
+-- Create the families table
+CREATE TABLE families (
+  id SERIAL PRIMARY KEY,
+  surname TEXT NOT NULL
+);
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+-- Create the users table
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  family_id INTEGER REFERENCES families(id),
+  name TEXT NOT NULL,
+  role TEXT
+);
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+-- Create the tasks table
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
+  family_id INTEGER REFERENCES families(id),
+  name TEXT NOT NULL,
+  description TEXT,
+  status TEXT,
+  priority INTEGER DEFAULT 1, -- Priority from 1 (Low) to 3 (High)
+  date_created TIMESTAMP DEFAULT NOW()
+);
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+-- Create the suggested_tasks table
+CREATE TABLE suggested_tasks (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  status TEXT,
+  estimated_cost NUMERIC
+);
 
-### `npm run eject`
+-- Insert initial data into suggested_tasks
+INSERT INTO suggested_tasks (name, description, status, estimated_cost) VALUES 
+('Schedule annual health check-ups', 'Coordinate and schedule annual health check-ups for the family.', 'Pending', 100),
+('Weekly grocery shopping', 'Create a comprehensive shopping list for the week and purchase essentials.', 'Pending', 50);
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+-- Insert sample family and user data
+INSERT INTO families (surname) VALUES ('Doe');
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+INSERT INTO users (family_id, name, role) VALUES 
+(1, 'John Doe', 'parent');
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+-- Insert sample tasks
+INSERT INTO tasks (family_id, name, description, status, priority) VALUES 
+(1, 'Fix the kitchen sink', 'The sink has a leak that needs to be fixed.', 'Pending', 2),
+(1, 'Grocery shopping', 'Buy groceries for the week.', 'Pending', 1),
+(1, 'Mow the lawn', 'Mow the front and back lawns.', 'In progress', 3);
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 4. Set Up the .env File
+Create a .env file at the root of your project with the following content, replacing the placeholder values with your Supabase project credentials:
 
-## Learn More
+```
+REACT_APP_SUPABASE_URL=https://<your-supabase-url>.supabase.co
+REACT_APP_SUPABASE_KEY=<your-supabase-api-key>
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 5. Running the Project Locally
+Once you have the .env file configured and the Supabase tables set up, you can run the project locally using the following command:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+npm start
+```
 
-### Code Splitting
+This will start the development server. By default, the app should be available at http://localhost:3000.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Thank you for reading!
